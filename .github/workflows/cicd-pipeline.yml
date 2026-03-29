@@ -116,7 +116,7 @@ jobs:
       # Install dependencies for your custom wait-for-approval action
       - name: Install Wait-for-Approval dependencies
         run: |
-          cd .github/actions/terraform-wait-approval
+          cd ../.github/actions/terraform-wait-approval
           npm ci
 
       # Wait for approval comment on issue
