@@ -19,10 +19,11 @@ on:
         options:
           - us-east-1
           - eu-west-1
+
 permissions:
-  contents: read        # default to read code
-  issues: write  
-  
+  contents: read        # read repo code
+  issues: write          # needed for creating/writing issues
+
 jobs:
   tf_validate:
     name: Validate Terraform
@@ -69,10 +70,14 @@ jobs:
         with:
           name: tfplan
           path: tfplan
+
+      # Install dependencies for custom terraform-approval action
       - name: Install Terraform Approval dependencies
         run: |
           cd ../.github/actions/terraform-approval
           npm ci
+          
+      # Request Approval
       - name: Request Approval
         id: request-approval
         uses: ./.github/actions/terraform-approval
@@ -98,10 +103,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
-      - name: Install Terraform Approval dependencies
+          
+      # Install dependencies for custom terraform-wait-approval action
+      - name: Install Terraform Wait Approval dependencies
         run: |
-          cd ../.github/actions/terraform-approval
+          cd ../.github/actions/terraform-wait-approval
           npm ci
+
       # Wait for approval comment on issue
       - name: Wait for Approval
         id: wait-approval
@@ -110,7 +118,7 @@ jobs:
           issue-number: ${{ steps.request-approval.outputs.issue-number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       # Download the plan artifact
       - name: Download Plan
         uses: actions/download-artifact@v4
