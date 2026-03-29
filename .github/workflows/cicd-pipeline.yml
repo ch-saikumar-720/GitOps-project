@@ -19,7 +19,10 @@ on:
         options:
           - us-east-1
           - eu-west-1
-
+permissions:
+  contents: read        # default to read code
+  issues: write  
+  
 jobs:
   tf_validate:
     name: Validate Terraform
