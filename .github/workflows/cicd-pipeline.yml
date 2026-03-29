@@ -74,15 +74,6 @@ jobs:
           name: tfplan
           path: tfplan
 
-<<<<<<< HEAD
-      # Install dependencies for your custom approval action
-      - name: Install Terraform Approval dependencies
-        run: |
-          cd .github/actions/terraform-approval
-          npm ci
-
-      # Create approval issue
-=======
       # Install dependencies for custom terraform-approval action
       - name: Install Terraform Approval dependencies
         run: |
@@ -90,7 +81,6 @@ jobs:
           npm ci
           
       # Request Approval
->>>>>>> 0c2c1a3f465e2c54d48c9200df082528ea593d6d
       - name: Request Approval
         id: request-approval
         uses: ./.github/actions/terraform-approval
@@ -131,10 +121,7 @@ jobs:
 
       # Wait for approval comment on issue
       - name: Wait for Approval
-<<<<<<< HEAD
-=======
         id: wait-approval
->>>>>>> 0c2c1a3f465e2c54d48c9200df082528ea593d6d
         uses: ./.github/actions/terraform-wait-approval
         with:
           issue-number: ${{ steps.request-approval.outputs.issue-number }}
