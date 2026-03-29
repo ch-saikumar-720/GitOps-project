@@ -1,5 +1,5 @@
 name: CI/CD Workflow
-run-name: Workflow for CICD pipleine -${{ github.event.inputs.environment }} ${{ github.event.inputs.region }} -${{ github.ref_name }}
+run-name: Workflow for CICD pipeline -${{ github.event.inputs.environment }} ${{ github.event.inputs.region }} -${{ github.ref_name }}
 on:
   workflow_dispatch:
     inputs:
@@ -12,7 +12,7 @@ on:
           - prod
           - test
       region:
-        description: Select teh region
+        description: Select the region
         required: true
         type: choice
         options:
@@ -21,68 +21,68 @@ on:
 
 jobs:
   tf_validate:
-    name: Validate terraform code
+    name: Validate Terraform
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: iac
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Configure AWS Credentials
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_DEFAULT_REGION=${{ github.event.inputs.region }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.region }}
       - name: Terraform Format
-        run: |
-          cd iac/
-          terraform fmt
+        run: terraform fmt
       - name: Terraform Validate
-        run: |
-          cd iac/
-          terraform validate
+        run: terraform validate
+
   tf_plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
     needs: tf_validate
+    defaults:
+      run:
+        working-directory: iac
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Configure AWS Credentials
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_DEFAULT_REGION=${{ github.event.inputs.region }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.region }}
       - name: Terraform Init
-        run: |
-          cd iac/
-          terraform init
-
+        run: terraform init
       - name: Terraform Plan
-        run: |
-          cd iac/
-          terraform plan -no-color > tfplan.txt
-          cat tfplan.txt
-    
+        run: terraform plan -out=tfplan
+      - name: Upload Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: tfplan
+
   tf_apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: tf_plan
+    defaults:
+      run:
+        working-directory: iac
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Configure AWS Credentials
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_DEFAULT_REGION=${{ github.event.inputs.region }}" >> $GITHUB_ENV
-      - name: Terraform Init
-        run: |
-          cd iac/
-          terraform init
-          terraform plan -out=tfplan
-          terraform apply -auto-approve tfplan
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.region }}
+      - name: Download Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: .
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
