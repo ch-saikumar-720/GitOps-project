@@ -1,9 +1,15 @@
-name: "Terraform Wait for Approval"
-description: "Waits until a GitHub issue gets /approve comment"
+name: Terraform Wait Approval
+description: Waits for approval comment on a GitHub issue
+runs:
+  using: 'node16'
+  main: 'index.js'
 inputs:
   issue-number:
-    description: "The number of the GitHub issue to monitor"
+    description: 'The GitHub issue number to wait for approval on'
     required: true
-runs:
-  using: "node16"
-  main: "index.js"
+  body:
+    description: 'The comment text that triggers approval'
+    required: true
+  timeout-minutes:
+    description: 'Maximum time in minutes to wait for approval'
+    required: true
