@@ -49,3 +49,34 @@ jobs:
           terraform plan -no-color > tfplan.txt
           cat tfplan.txt
     
+  tf_apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Configure AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=${{ github.event.inputs.region }}" >> $GITHUB_ENV
+      - name: Terraform Init
+        run: |
+          cd iac/
+          terraform init
+
+      - name: Terraform Validate
+        run: |
+          cd iac/
+          terraform validate
+
+      - name: Terraform Plan
+        run: |
+          cd iac/
+          terraform plan -out=tfplan
+      - name: Terraform Apply
+        run: |
+          cd iac/
+          terraform apply -auto-approve tfplan
