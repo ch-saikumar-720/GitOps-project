@@ -1,0 +1,9 @@
+name: "Terraform Wait for Approval"
+description: "Waits until a GitHub issue gets /approve comment"
+inputs:
+  issue-number:
+    description: "The number of the GitHub issue to monitor"
+    required: true
+runs:
+  using: "node16"
+  main: "index.js"
