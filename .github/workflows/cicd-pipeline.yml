@@ -108,9 +108,9 @@ jobs:
         uses: ./.github/actions/terraform-wait-approval
         with:
           issue-number: ${{ steps.request-approval.outputs.issue-number }}
-          body: '/approve'
-          timeout-minutes: 300  # 5 mins max wait
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       # Download the plan artifact
       - name: Download Plan
         uses: actions/download-artifact@v4
