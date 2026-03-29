@@ -53,6 +53,8 @@ jobs:
     defaults:
       run:
         working-directory: iac
+    outputs:
+      issue-number: ${{ steps.request-approval.outputs.issue-number }}
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
@@ -113,18 +115,12 @@ jobs:
           cd ../.github/actions/terraform-wait-approval
           npm ci
 
-      # Install dependencies for your custom wait-for-approval action
-      - name: Install Wait-for-Approval dependencies
-        run: |
-          cd ../.github/actions/terraform-wait-approval
-          npm ci
-
       # Wait for approval comment on issue
       - name: Wait for Approval
         id: wait-approval
         uses: ./.github/actions/terraform-wait-approval
         with:
-          issue-number: ${{ steps.request-approval.outputs.issue-number }}
+          issue-number: ${{ needs.tf_plan.outputs.issue-number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
