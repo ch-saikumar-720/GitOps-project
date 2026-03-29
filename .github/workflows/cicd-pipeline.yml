@@ -71,7 +71,7 @@ jobs:
           path: tfplan
       - name: Install Terraform Approval dependencies
         run: |
-          cd .github/actions/terraform-approval
+          cd ../.github/actions/terraform-approval
           npm ci
       - name: Request Approval
         id: request-approval
@@ -100,7 +100,7 @@ jobs:
           aws-region: ${{ github.event.inputs.region }}
       - name: Install Terraform Approval dependencies
         run: |
-          cd .github/actions/terraform-approval
+          cd ../.github/actions/terraform-approval
           npm ci
       # Wait for approval comment on issue
       - name: Wait for Approval
