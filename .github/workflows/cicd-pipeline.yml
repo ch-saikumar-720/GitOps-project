@@ -40,6 +40,8 @@ jobs:
           aws-region: ${{ github.event.inputs.region }}
       - name: Terraform Format
         run: terraform fmt
+      - name: Terraform Init
+        run: terraform ini
       - name: Terraform Validate
         run: terraform validate
 
