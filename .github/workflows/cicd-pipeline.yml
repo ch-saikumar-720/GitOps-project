@@ -105,11 +105,11 @@ jobs:
       # Wait for approval comment on issue
       - name: Wait for Approval
         id: wait-approval
-        uses: peter-evans/wait-for-issue-comment@v2
+        uses: ./.github/actions/terraform-wait-approval
         with:
           issue-number: ${{ steps.request-approval.outputs.issue-number }}
           body: '/approve'
-          timeout-minutes: 4320  # 3 days max wait
+          timeout-minutes: 300  # 5 mins max wait
 
       # Download the plan artifact
       - name: Download Plan
