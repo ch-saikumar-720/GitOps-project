@@ -68,7 +68,10 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: |
+          terraform plan -out=tfplan
+          mkdir -p tfplan
+          mv tfplan tfplan/
 
       - name: Upload Plan
         uses: actions/upload-artifact@v4
