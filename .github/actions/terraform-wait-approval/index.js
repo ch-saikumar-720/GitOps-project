@@ -11,8 +11,8 @@ async function run() {
 
     core.info(`Waiting for /approve comment on issue #${issueNumber}...`);
 
-    // Poll every 30s, timeout after 3 days (4320 min)
-    const timeoutMinutes = 4320;
+    // Poll every 30s, timeout after 5 minutes
+    const timeoutMinutes = 600;
     const pollInterval = 30 * 1000; // 30 seconds
     const maxPolls = (timeoutMinutes * 60 * 1000) / pollInterval;
 
@@ -23,7 +23,7 @@ async function run() {
         issue_number: parseInt(issueNumber),
       });
 
-      const approved = comments.some(c => c.body.trim() === '/approve');
+      const approved = comments.some(c => c.body.trim() === 'approve');
       if (approved) {
         core.info('Approval received! Proceeding...');
         return;
