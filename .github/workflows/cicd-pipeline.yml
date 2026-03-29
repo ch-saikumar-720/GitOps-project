@@ -69,6 +69,10 @@ jobs:
         with:
           name: tfplan
           path: tfplan
+      - name: Install Terraform Approval dependencies
+        run: |
+          cd .github/actions/terraform-approval
+          npm ci
       - name: Request Approval
         id: request-approval
         uses: ./.github/actions/terraform-approval
@@ -94,7 +98,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
-
+      - name: Install Terraform Approval dependencies
+        run: |
+          cd .github/actions/terraform-approval
+          npm ci
       # Wait for approval comment on issue
       - name: Wait for Approval
         id: wait-approval
