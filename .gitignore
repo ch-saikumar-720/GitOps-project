@@ -27,3 +27,6 @@ override.tf.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Node modules for GitHub Action
+.github/actions/terraform-approval/node_modules

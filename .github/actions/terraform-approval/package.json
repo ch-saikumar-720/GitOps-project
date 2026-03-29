@@ -1,0 +1,10 @@
+{
+  "name": "terraform-approval-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to create approval issue for Terraform",
+  "main": "index.js",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.0.3"
+  }
+}

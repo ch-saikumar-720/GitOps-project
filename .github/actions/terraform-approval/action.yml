@@ -1,0 +1,19 @@
+name: Terraform Approval Issue
+description: "Creates a GitHub issue requesting approval before Terraform apply"
+author: YourName
+runs:
+  using: "node16"
+  main: "index.js"
+inputs:
+  environment:
+    description: "Environment name (dev, test, prod)"
+    required: true
+  region:
+    description: "AWS region"
+    required: true
+  plan-url:
+    description: "URL or path to Terraform plan artifact"
+    required: false
+outputs:
+  issue-number:
+    description: "The number of the created GitHub issue"

@@ -1,5 +1,6 @@
 name: CI/CD Workflow
-run-name: Workflow for CICD pipeline -${{ github.event.inputs.environment }} ${{ github.event.inputs.region }} -${{ github.ref_name }}
+run-name: Workflow for CICD pipeline - ${{ github.event.inputs.environment }} ${{ github.event.inputs.region }} - ${{ github.ref_name }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -63,6 +64,15 @@ jobs:
         with:
           name: tfplan
           path: tfplan
+      - name: Request Approval
+        id: request-approval
+        uses: ./.github/actions/terraform-approval
+        with:
+          environment: ${{ github.event.inputs.environment }}
+          region: ${{ github.event.inputs.region }}
+          plan-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   tf_apply:
     name: Terraform Apply
@@ -79,10 +89,23 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
+
+      # Wait for approval comment on issue
+      - name: Wait for Approval
+        id: wait-approval
+        uses: peter-evans/wait-for-issue-comment@v2
+        with:
+          issue-number: ${{ steps.request-approval.outputs.issue-number }}
+          body: '/approve'
+          timeout-minutes: 4320  # 3 days max wait
+
+      # Download the plan artifact
       - name: Download Plan
         uses: actions/download-artifact@v3
         with:
           name: tfplan
           path: .
+
+      # Apply Terraform
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
