@@ -69,7 +69,8 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-
+      - name: Debug - confirm tfplan exists
+        run: ls -l tfplan
 
       - name: Upload Plan
         uses: actions/upload-artifact@v4
