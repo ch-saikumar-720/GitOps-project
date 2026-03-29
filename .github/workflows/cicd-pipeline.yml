@@ -36,7 +36,7 @@ jobs:
       - name: Terraform Init
         run: |
           cd iac/
-          terraform init -backend-config=backend.config
+          terraform init
 
       - name: Terraform Validate
         run: |
