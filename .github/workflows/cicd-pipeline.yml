@@ -68,16 +68,14 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: |
-          terraform plan -out=tfplan
-          mkdir -p tfplan_artifact
-          mv tfplan tfplan_artifact/
+        run: terraform plan -out=tfplan
+
 
       - name: Upload Plan
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: ./tfplan_artifact
+          path: tfplan
 
       # Install dependencies for custom terraform-approval action
       - name: Install Terraform Approval dependencies
@@ -136,4 +134,4 @@ jobs:
 
       # Apply Terraform
       - name: Terraform Apply
-        run: terraform apply -auto-approve ./tfplan_artifact/tfplan
+        run: terraform apply -auto-approve ./tfplan
