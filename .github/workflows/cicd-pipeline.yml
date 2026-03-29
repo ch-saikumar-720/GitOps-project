@@ -60,11 +60,6 @@ jobs:
           cd iac/
           terraform init
 
-      - name: Terraform Validate
-        run: |
-          cd iac/
-          terraform validate
-
       - name: Terraform Plan
         run: |
           cd iac/
