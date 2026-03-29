@@ -20,9 +20,31 @@ on:
           - eu-west-1
 
 jobs:
+  tf_validate:
+    name: Validate terraform code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Configure AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=${{ github.event.inputs.region }}" >> $GITHUB_ENV
+      - name: Terraform Format
+        run: |
+          cd iac/
+          terraform fmt
+      - name: Terraform Validate
+        run: |
+          cd iac/
+          terraform validate
   tf_plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
+    needs: tf_validate
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,6 +74,7 @@ jobs:
   tf_apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    needs: tf_plan
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,17 +89,5 @@ jobs:
         run: |
           cd iac/
           terraform init
-
-      - name: Terraform Validate
-        run: |
-          cd iac/
-          terraform validate
-
-      - name: Terraform Plan
-        run: |
-          cd iac/
           terraform plan -out=tfplan
-      - name: Terraform Apply
-        run: |
-          cd iac/
           terraform apply -auto-approve tfplan
