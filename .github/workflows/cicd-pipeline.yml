@@ -55,15 +55,26 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
+
       - name: Terraform Init
         run: terraform init
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+
       - name: Upload Plan
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
           path: tfplan
+
+      # Install dependencies for your custom approval action
+      - name: Install Terraform Approval dependencies
+        run: |
+          cd .github/actions/terraform-approval
+          npm ci
+
+      # Create approval issue
       - name: Request Approval
         id: request-approval
         uses: ./.github/actions/terraform-approval
@@ -90,14 +101,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
 
+      # Install dependencies for your custom wait-for-approval action
+      - name: Install Wait-for-Approval dependencies
+        run: |
+          cd .github/actions/terraform-wait-approval
+          npm ci
+
       # Wait for approval comment on issue
       - name: Wait for Approval
-        id: wait-approval
-        uses: peter-evans/wait-for-issue-comment@v2
+        uses: ./.github/actions/terraform-wait-approval
         with:
           issue-number: ${{ steps.request-approval.outputs.issue-number }}
-          body: '/approve'
-          timeout-minutes: 4320  # 3 days max wait
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Download the plan artifact
       - name: Download Plan
