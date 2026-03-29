@@ -69,14 +69,6 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-      - name: Debug - confirm tfplan exists
-        run: ls -l tfplan
-
-      - name: Upload Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: tfplan
 
       # Install dependencies for custom terraform-approval action
       - name: Install Terraform Approval dependencies
@@ -94,7 +86,20 @@ jobs:
           plan-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # Install dependencies for custom terraform-wait-approval action
+      - name: Install Terraform Wait Approval dependencies
+        run: |
+          cd ../.github/actions/terraform-wait-approval
+          npm ci
 
+      # Wait for approval comment on issue
+      - name: Wait for Approval
+        id: wait-approval
+        uses: ./.github/actions/terraform-wait-approval
+        with:
+          issue-number: ${{ steps.request-approval.outputs.issue-number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   tf_apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
@@ -111,28 +116,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
           
-      # Install dependencies for custom terraform-wait-approval action
-      - name: Install Terraform Wait Approval dependencies
-        run: |
-          cd ../.github/actions/terraform-wait-approval
-          npm ci
+      - name: Terraform Init
+        run: terraform init
 
-      # Wait for approval comment on issue
-      - name: Wait for Approval
-        id: wait-approval
-        uses: ./.github/actions/terraform-wait-approval
-        with:
-          issue-number: ${{ needs.tf_plan.outputs.issue-number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Download the plan artifact
-      - name: Download Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: .
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
 
       # Apply Terraform
       - name: Terraform Apply
-        run: terraform apply -auto-approve ./tfplan
+        run: terraform apply -auto-approve tfplan
