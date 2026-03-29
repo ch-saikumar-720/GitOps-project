@@ -34,13 +34,18 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_DEFAULT_REGION=${{ github.event.inputs.region }}" >> $GITHUB_ENV
       - name: Terraform Init
-        run: terraform init -backend-config=backend.config
+        run: |
+          cd iac/
+          terraform init -backend-config=backend.config
 
       - name: Terraform Validate
-        run: terraform validate
+        run: |
+          cd iac/
+          terraform validate
 
       - name: Terraform Plan
         run: |
+          cd iac/
           terraform plan -no-color > tfplan.txt
           cat tfplan.txt
     
