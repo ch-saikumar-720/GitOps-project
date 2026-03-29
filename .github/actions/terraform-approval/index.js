@@ -19,7 +19,7 @@ async function run() {
     const issueTitle = `Terraform Apply Approval Needed - ${environment}`;
     let issueBody = `Terraform plan has been generated for **${environment}** in **${region}** region.\n\n`;
     issueBody += "Please review the plan before approving.\n";
-    issueBody += "Comment `/approve` on this issue to trigger Terraform Apply.\n";
+    issueBody += "Comment `approve` on this issue to trigger Terraform Apply.\n";
     if (planUrl) {
       issueBody += `\nPlan artifact: ${planUrl}`;
     }
