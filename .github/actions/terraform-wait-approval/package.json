@@ -1,9 +1,9 @@
 {
   "name": "terraform-wait-approval",
   "version": "1.0.0",
-  "description": "Waits for approval comment on a GitHub issue",
   "main": "index.js",
   "dependencies": {
+<<<<<<< HEAD
     "@actions/core": "^1.11.1",
     "@actions/github": "^5.1.1"
   },
@@ -13,4 +13,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC"
+=======
+    "@actions/core": "^1.12.0",
+    "@actions/github": "^5.0.0"
+  }
+>>>>>>> 0c2c1a3f465e2c54d48c9200df082528ea593d6d
 }

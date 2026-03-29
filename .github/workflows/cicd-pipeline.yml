@@ -20,6 +20,10 @@ on:
           - us-east-1
           - eu-west-1
 
+permissions:
+  contents: read        # read repo code
+  issues: write          # needed for creating/writing issues
+
 jobs:
   tf_validate:
     name: Validate Terraform
@@ -37,6 +41,8 @@ jobs:
           aws-region: ${{ github.event.inputs.region }}
       - name: Terraform Format
         run: terraform fmt
+      - name: Terraform Init
+        run: terraform init
       - name: Terraform Validate
         run: terraform validate
 
@@ -63,11 +69,12 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Upload Plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: tfplan
 
+<<<<<<< HEAD
       # Install dependencies for your custom approval action
       - name: Install Terraform Approval dependencies
         run: |
@@ -75,6 +82,15 @@ jobs:
           npm ci
 
       # Create approval issue
+=======
+      # Install dependencies for custom terraform-approval action
+      - name: Install Terraform Approval dependencies
+        run: |
+          cd ../.github/actions/terraform-approval
+          npm ci
+          
+      # Request Approval
+>>>>>>> 0c2c1a3f465e2c54d48c9200df082528ea593d6d
       - name: Request Approval
         id: request-approval
         uses: ./.github/actions/terraform-approval
@@ -100,6 +116,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
+          
+      # Install dependencies for custom terraform-wait-approval action
+      - name: Install Terraform Wait Approval dependencies
+        run: |
+          cd ../.github/actions/terraform-wait-approval
+          npm ci
 
       # Install dependencies for your custom wait-for-approval action
       - name: Install Wait-for-Approval dependencies
@@ -109,6 +131,10 @@ jobs:
 
       # Wait for approval comment on issue
       - name: Wait for Approval
+<<<<<<< HEAD
+=======
+        id: wait-approval
+>>>>>>> 0c2c1a3f465e2c54d48c9200df082528ea593d6d
         uses: ./.github/actions/terraform-wait-approval
         with:
           issue-number: ${{ steps.request-approval.outputs.issue-number }}
@@ -117,7 +143,7 @@ jobs:
 
       # Download the plan artifact
       - name: Download Plan
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: tfplan
           path: .
