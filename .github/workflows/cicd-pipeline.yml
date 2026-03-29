@@ -136,4 +136,4 @@ jobs:
 
       # Apply Terraform
       - name: Terraform Apply
-        run: terraform apply -auto-approve ./tfplan
+        run: terraform apply -auto-approve ./tfplan_artifact/tfplan
