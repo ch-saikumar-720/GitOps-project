@@ -21,6 +21,8 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+node_modules/
+build/
 # Lock file (optional: usually commit this)
 .terraform.lock.hcl
 
