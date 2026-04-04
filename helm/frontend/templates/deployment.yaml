@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: frontend
+          image: 643672120270.dkr.ecr.us-east-1.amazonaws.com/gitops:frontend
+          ports:
+            - containerPort: 80

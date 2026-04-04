@@ -1,0 +1,14 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: backend
+  namespace: default
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./helm/backend
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system

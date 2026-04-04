@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: 643672120270.dkr.ecr.us-east-1.amazonaws.com/gitops:backend
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: database-1.c8t0coq4ejj9.us-east-1.rds.amazonaws.com
